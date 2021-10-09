@@ -1,0 +1,43 @@
+version: "3"
+
+services: 
+    db:
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: node
+        ports:
+            - "5432:5432"
+        volumes:
+            - /home/willian/dev/Docker-Compose/PostgreSQL:/var/lib/postgresql/data 
+        networks:
+            - db_net
+
+    app:
+        build: .
+        command: npm run dev
+        ports: 
+            - "3000:3000"
+        volumes: 
+            - .:/usr/app
+        networks:
+            - db_net
+        depends_on: 
+            - db
+ 
+    pgadmin:
+        container_name: pg_container
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: root
+        ports:
+            - "5050:80"
+        networks:
+            - db_net
+
+networks: 
+    db_net:
+        driver: bridge
